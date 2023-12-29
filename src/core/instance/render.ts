@@ -37,10 +37,14 @@ export function initRender(vm: Component) {
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
   // @ts-expect-error
+
+  // render 都是通过调用 createElement 生成 vnode
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
   // user-written render functions.
   // @ts-expect-error
+
+  // 令 vm.$createElement = createElement
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
 
   // $attrs & $listeners are exposed for easier HOC creation.
@@ -100,10 +104,12 @@ export function renderMixin(Vue: typeof Component) {
     return nextTick(fn, this)
   }
 
+  // _render 的定义
   Vue.prototype._render = function (): VNode {
     const vm: Component = this
     const { render, _parentVnode } = vm.$options
 
+    // 插槽相关
     if (_parentVnode && vm._isMounted) {
       vm.$scopedSlots = normalizeScopedSlots(
         vm.$parent!,
@@ -126,6 +132,8 @@ export function renderMixin(Vue: typeof Component) {
     try {
       setCurrentInstance(vm)
       currentRenderingInstance = vm
+      
+      // vm.$createElement 即 createElement 方法
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e: any) {
       handleError(e, vm, `render`)

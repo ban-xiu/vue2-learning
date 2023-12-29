@@ -22,9 +22,13 @@ Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+
+  // 如果是字符串则转化为 dom 
   el = el && query(el)
 
   /* istanbul ignore if */
+
+  // 不能挂载到 <html> 或 <body> 上
   if (el === document.body || el === document.documentElement) {
     __DEV__ &&
       warn(
@@ -35,6 +39,8 @@ Vue.prototype.$mount = function (
 
   const options = this.$options
   // resolve template/el and convert to render function
+
+  // 如果没有定义 render 方法，则会把 el 或者 template 字符串转换成 render 方法
   if (!options.render) {
     let template = options.template
     if (template) {
@@ -67,6 +73,7 @@ Vue.prototype.$mount = function (
         mark('compile')
       }
 
+      // 转化成 render 方法
       const { render, staticRenderFns } = compileToFunctions(
         template,
         {

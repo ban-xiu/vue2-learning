@@ -118,6 +118,7 @@ export function createPatchFunction(backend) {
 
   let creatingElmInVPre = 0
 
+  // createElm 核心方法
   function createElm(
     vnode,
     insertedVnodeQueue,
@@ -798,6 +799,7 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // 实际上返回了 patch 方法
   return function patch(oldVnode, vnode, hydrating, removeOnly) {
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) invokeDestroyHook(oldVnode)
@@ -817,6 +819,8 @@ export function createPatchFunction(backend) {
         // patch existing root node
         patchVnode(oldVnode, vnode, insertedVnodeQueue, null, null, removeOnly)
       } else {
+
+        // 传入了真实的 dom
         if (isRealElement) {
           // mounting to a real element
           // check if this is server-rendered content and if we can perform

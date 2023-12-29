@@ -60,6 +60,8 @@ export function initLifecycle(vm: Component) {
 }
 
 export function lifecycleMixin(Vue: typeof Component) {
+
+  // _update 定义
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el
@@ -70,6 +72,8 @@ export function lifecycleMixin(Vue: typeof Component) {
     // based on the rendering backend used.
     if (!prevVnode) {
       // initial render
+
+      // update 核心调用 __patch__
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates
@@ -149,7 +153,10 @@ export function mountComponent(
   el: Element | null | undefined,
   hydrating?: boolean
 ): Component {
+
+  // 更新了 vm.$el
   vm.$el = el
+  
   if (!vm.$options.render) {
     // @ts-expect-error invalid type
     vm.$options.render = createEmptyVNode
@@ -186,12 +193,18 @@ export function mountComponent(
       const endTag = `vue-perf-end:${id}`
 
       mark(startTag)
+
+      // 生成虚拟 Node
       const vnode = vm._render()
+
       mark(endTag)
       measure(`vue ${name} render`, startTag, endTag)
 
       mark(startTag)
+
+      // 更新虚拟 Node
       vm._update(vnode, hydrating)
+
       mark(endTag)
       measure(`vue ${name} patch`, startTag, endTag)
     }
@@ -217,6 +230,8 @@ export function mountComponent(
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
+
+  // 监视器：初始化与数据变化时执行回调函数
   new Watcher(
     vm,
     updateComponent,
@@ -236,7 +251,11 @@ export function mountComponent(
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
+
+  // vm.$vnode == null 表示父节点为空，即该节点为根元素
   if (vm.$vnode == null) {
+
+    // 挂载实例
     vm._isMounted = true
     callHook(vm, 'mounted')
   }

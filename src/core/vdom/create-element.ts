@@ -82,9 +82,15 @@ export function _createElement(
     data.scopedSlots = { default: children[0] }
     children.length = 0
   }
+
+  // 根据不同类型规范化 children
   if (normalizationType === ALWAYS_NORMALIZE) {
+
+    // 1
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {
+ 
+    // 2
     children = simpleNormalizeChildren(children)
   }
   let vnode, ns

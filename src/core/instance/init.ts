@@ -45,6 +45,8 @@ export function initMixin(Vue: typeof Component) {
       // internal component options needs special treatment.
       initInternalComponent(vm, options as any)
     } else {
+      
+      // 合并配置
       vm.$options = mergeOptions(
         resolveConstructorOptions(vm.constructor as any),
         options || {},
@@ -59,13 +61,27 @@ export function initMixin(Vue: typeof Component) {
     }
     // expose real self
     vm._self = vm
+
+    // 初始化生命周期 
     initLifecycle(vm)
+
+    // 初始化事件中心
     initEvents(vm)
+
+    // 初始化渲染
     initRender(vm)
+
+    // beforeCreate
     callHook(vm, 'beforeCreate', undefined, false /* setContext */)
+
     initInjections(vm) // resolve injections before data/props
+
+    // 初始化 data computed watcher 等
     initState(vm)
+
     initProvide(vm) // resolve provide after data/props
+
+    // create
     callHook(vm, 'created')
 
     /* istanbul ignore if */
@@ -75,6 +91,7 @@ export function initMixin(Vue: typeof Component) {
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
 
+    // 如果有 el 则将 vm 实例挂载
     if (vm.$options.el) {
       vm.$mount(vm.$options.el)
     }
