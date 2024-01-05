@@ -138,6 +138,8 @@ export function createPatchFunction(backend) {
     }
 
     vnode.isRootInsert = !nested // for transition enter check
+
+    // 注意 createComponent 方法，如果传入的 vnode 是一个普通的节点则直接往下走；如果传入的 vnode 是一个组件则直接 return
     if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
       return
     }
@@ -185,12 +187,18 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // createComponent 定义
   function createComponent(vnode, insertedVnodeQueue, parentElm, refElm) {
     let i = vnode.data
+
+    // 如果 vnode 是组件类型，那么 i 就是在 componentVNodeHooks 中的 init 钩子函数
     if (isDef(i)) {
       const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
       if (isDef((i = i.hook)) && isDef((i = i.init))) {
+
+        // 调用 init 钩子函数
         i(vnode, false /* hydrating */)
+
       }
       // after calling the init hook, if the vnode is a child component
       // it should've created a child instance and mounted it. the child
@@ -198,7 +206,10 @@ export function createPatchFunction(backend) {
       // in that case we can just return the element and be done.
       if (isDef(vnode.componentInstance)) {
         initComponent(vnode, insertedVnodeQueue)
+
+        // 组件的 dom 插入
         insert(parentElm, vnode.elm, refElm)
+        
         if (isTrue(isReactivated)) {
           reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm)
         }
@@ -812,6 +823,8 @@ export function createPatchFunction(backend) {
     if (isUndef(oldVnode)) {
       // empty mount (likely as component), create new root element
       isInitialPatch = true
+
+      // 核心方法 createElm
       createElm(vnode, insertedVnodeQueue)
     } else {
       const isRealElement = isDef(oldVnode.nodeType)

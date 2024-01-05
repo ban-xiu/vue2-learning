@@ -36,12 +36,18 @@ export function initLifecycle(vm: Component) {
   const options = vm.$options
 
   // locate first non-abstract parent
+
+  // initInternalComponent(vm, options) 合并 options，把 parent 存储在 vm.$options
   let parent = options.parent
+
   if (parent && !options.abstract) {
     while (parent.$options.abstract && parent.$parent) {
       parent = parent.$parent
     }
+
+    // 把当前的 vm 存储到父实例的 $children 中
     parent.$children.push(vm)
+
   }
 
   vm.$parent = parent
@@ -67,7 +73,11 @@ export function lifecycleMixin(Vue: typeof Component) {
     const prevEl = vm.$el
     const prevVnode = vm._vnode
     const restoreActiveInstance = setActiveInstance(vm)
+
+    // vm._vnode 是是通过 vm._render() 返回的组件渲染 vnode
+    // 和 vm.$vnode 的关系就是一种父子关系
     vm._vnode = vnode
+
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
     if (!prevVnode) {
@@ -91,6 +101,8 @@ export function lifecycleMixin(Vue: typeof Component) {
     let wrapper: Component | undefined = vm
     while (
       wrapper &&
+
+      // vm.$vnode 为 vm._vnode 之父
       wrapper.$vnode &&
       wrapper.$parent &&
       wrapper.$vnode === wrapper.$parent._vnode
@@ -194,7 +206,7 @@ export function mountComponent(
 
       mark(startTag)
 
-      // 生成虚拟 Node
+      // 生成虚拟 node
       const vnode = vm._render()
 
       mark(endTag)
@@ -202,7 +214,7 @@ export function mountComponent(
 
       mark(startTag)
 
-      // 更新虚拟 Node
+      // 更新虚拟 node
       vm._update(vnode, hydrating)
 
       mark(endTag)

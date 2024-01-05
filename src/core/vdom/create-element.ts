@@ -94,6 +94,8 @@ export function _createElement(
     children = simpleNormalizeChildren(children)
   }
   let vnode, ns
+
+  // 传入一个 html 字符串
   if (typeof tag === 'string') {
     let Ctor
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
@@ -110,6 +112,8 @@ export function _createElement(
           context
         )
       }
+
+      // 根据 html 字符串创建一个普通的 vnode
       vnode = new VNode(
         config.parsePlatformTagName(tag),
         data,
@@ -118,12 +122,19 @@ export function _createElement(
         undefined,
         context
       )
-    } else if (
+    } 
+       
+    else if (
       (!data || !data.pre) &&
+
+      // 当传入的不是 html 字符串时
       isDef((Ctor = resolveAsset(context.$options, 'components', tag)))
     ) {
+      
+      // 通过 createComponent 方法返回一个组件节点
       // component
       vnode = createComponent(Ctor, data, context, children, tag)
+      
     } else {
       // unknown or unlisted namespaced elements
       // check at runtime because it may get assigned a namespace when its

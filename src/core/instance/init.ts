@@ -43,6 +43,8 @@ export function initMixin(Vue: typeof Component) {
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
       // internal component options needs special treatment.
+
+      // 如果是一个组件，执行 initInternalComponent 方法
       initInternalComponent(vm, options as any)
     } else {
       
@@ -93,6 +95,8 @@ export function initMixin(Vue: typeof Component) {
 
     // 如果有 el 则将 vm 实例挂载
     if (vm.$options.el) {
+
+      // 对于组件的挂载，已经在 componentVNodeHooks 的 init 钩子函数中实现
       vm.$mount(vm.$options.el)
     }
   }
@@ -105,6 +109,8 @@ export function initInternalComponent(
   const opts = (vm.$options = Object.create((vm.constructor as any).options))
   // doing this because it's faster than dynamic enumeration.
   const parentVnode = options._parentVnode
+
+  // 已经通过 createComponentInstanceForVnode 合并到 $options 中
   opts.parent = options.parent
   opts._parentVnode = parentVnode
 

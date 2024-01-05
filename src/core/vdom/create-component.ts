@@ -32,6 +32,7 @@ export function getComponentName(options: ComponentOptions) {
   return options.name || options.__name || options._componentTag
 }
 
+// 一些钩子函数 componentVNodeHooks
 // inline hooks to be invoked on component VNodes during patch
 const componentVNodeHooks = {
   init(vnode: VNodeWithData, hydrating: boolean): boolean | void {
@@ -44,6 +45,8 @@ const componentVNodeHooks = {
       const mountedNode: any = vnode // work around flow
       componentVNodeHooks.prepatch(mountedNode, mountedNode)
     } else {
+
+      // createComponentInstanceForVnode 方法，创建一个 Vue 的实例，然后调用 $mount 方法挂载子组件
       const child = (vnode.componentInstance = createComponentInstanceForVnode(
         vnode,
         activeInstance
@@ -109,10 +112,13 @@ export function createComponent(
     return
   }
 
+  // 传入组件的 $options._base
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
+
+    // 注意 extend 方法，返回一个 Vue 的子类 Sub，是一个构造函数
     Ctor = baseCtor.extend(Ctor as typeof Component)
   }
 
@@ -187,11 +193,14 @@ export function createComponent(
     }
   }
 
+  // 安装组件钩子函数
   // install component management hooks onto the placeholder node
   installComponentHooks(data)
 
   // return a placeholder vnode
   // @ts-expect-error
+
+  // 实例化组件 vnode 并返回，没有  children
   const name = getComponentName(Ctor.options) || tag
   const vnode = new VNode(
     // @ts-expect-error
@@ -216,6 +225,8 @@ export function createComponentInstanceForVnode(
   parent?: any
 ): Component {
   const options: InternalComponentOptions = {
+
+    // _isComponent 标记是一个组件，在 _init 方法里面会执行相应的方法
     _isComponent: true,
     _parentVnode: vnode,
     parent
@@ -229,6 +240,7 @@ export function createComponentInstanceForVnode(
   return new vnode.componentOptions.Ctor(options)
 }
 
+// installComponentHooks 定义
 function installComponentHooks(data: VNodeData) {
   const hooks = data.hook || (data.hook = {})
   for (let i = 0; i < hooksToMerge.length; i++) {

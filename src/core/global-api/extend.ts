@@ -33,8 +33,13 @@ export function initExtend(Vue: GlobalAPI) {
     }
 
     const Sub = function VueComponent(this: any, options: any) {
+
+      // 再次调用了 _init 方法
       this._init(options)
+
     } as unknown as typeof Component
+
+    // 原型继承，此时 Super 为 Vue，即 Sub 是 Vue 的子类
     Sub.prototype = Object.create(Super.prototype)
     Sub.prototype.constructor = Sub
     Sub.cid = cid++
@@ -44,9 +49,13 @@ export function initExtend(Vue: GlobalAPI) {
     // For props and computed properties, we define the proxy getters on
     // the Vue instances at extension time, on the extended prototype. This
     // avoids Object.defineProperty calls for each instance created.
+
+    // 初始化 props
     if (Sub.options.props) {
       initProps(Sub)
     }
+
+    // 初始化 computed
     if (Sub.options.computed) {
       initComputed(Sub)
     }
@@ -74,6 +83,8 @@ export function initExtend(Vue: GlobalAPI) {
     Sub.sealedOptions = extend({}, Sub.options)
 
     // cache constructor
+
+    // 缓存这个构造函数
     cachedCtors[SuperId] = Sub
     return Sub
   }

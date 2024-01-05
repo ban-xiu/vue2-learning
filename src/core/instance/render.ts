@@ -124,7 +124,10 @@ export function renderMixin(Vue: typeof Component) {
 
     // set parent vnode. this allows render functions to have access
     // to the data on the placeholder node.
+
+    // _parentVnode 就是当前组件的父 vnode
     vm.$vnode = _parentVnode!
+    
     // render self
     const prevInst = currentInstance
     const prevRenderInst = currentRenderingInstance
