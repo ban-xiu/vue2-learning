@@ -50,7 +50,13 @@ export function initGlobalAPI(Vue: GlobalAPI) {
     return obj
   }
 
+  // 先通过 Vue.options = Object.create(null) 创建一个配置的空对象
   Vue.options = Object.create(null)
+
+  // 遍历 ASSET_TYPES， 相当于做了： 
+  // Vue.options.components = {}
+  // Vue.options.directives = {}
+  // Vue.options.filters = {}
   ASSET_TYPES.forEach(type => {
     Vue.options[type + 's'] = Object.create(null)
   })
@@ -61,6 +67,7 @@ export function initGlobalAPI(Vue: GlobalAPI) {
   // 设置全局的 options._base，在 _init 方法合并配置的时候通过 vm.$options 赋值给 vm 实例
   Vue.options._base = Vue
 
+  // 把一些内置组件扩展到 Vue.options.components 上
   extend(Vue.options.components, builtInComponents)
 
   initUse(Vue)

@@ -44,7 +44,7 @@ export function initMixin(Vue: typeof Component) {
       // since dynamic options merging is pretty slow, and none of the
       // internal component options needs special treatment.
 
-      // 如果是一个组件，执行 initInternalComponent 方法
+      // 如果是一个组件，执行 initInternalComponent 方法，也是合并配置
       initInternalComponent(vm, options as any)
     } else {
       

@@ -74,7 +74,7 @@ export function lifecycleMixin(Vue: typeof Component) {
     const prevVnode = vm._vnode
     const restoreActiveInstance = setActiveInstance(vm)
 
-    // vm._vnode 是是通过 vm._render() 返回的组件渲染 vnode
+    // vm._vnode 是是通过 vm._render 返回的组件渲染 vnode
     // 和 vm.$vnode 的关系就是一种父子关系
     vm._vnode = vnode
 
@@ -85,9 +85,11 @@ export function lifecycleMixin(Vue: typeof Component) {
 
       // update 核心调用 __patch__
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
+
     } else {
       // updates
       vm.$el = vm.__patch__(prevVnode, vnode)
+
     }
     restoreActiveInstance()
     // update __vue__ reference

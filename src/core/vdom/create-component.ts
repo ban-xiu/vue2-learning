@@ -224,6 +224,7 @@ export function createComponentInstanceForVnode(
   // activeInstance in lifecycle state
   parent?: any
 ): Component {
+
   const options: InternalComponentOptions = {
 
     // _isComponent 标记是一个组件，在 _init 方法里面会执行相应的方法
@@ -231,6 +232,7 @@ export function createComponentInstanceForVnode(
     _parentVnode: vnode,
     parent
   }
+
   // check inline-template render functions
   const inlineTemplate = vnode.data.inlineTemplate
   if (isDef(inlineTemplate)) {

@@ -33,20 +33,22 @@
 
 #### 实例化 vnode
 
-- 通过 new Vnode 创建了组件 vnode 节点，是 vm._render 的过程 
+- 通过 new Vnode 实例化了组件 vnode 节点，是 vm._render 的过程 
 - 与普通元素节点的 vnode 不同，组件的 vnode 是没有 children 的
-- 创建 vnode 后接下来会走 vm._update -> vm.\__patch\__ -> patch -> createElm 以创建元素节点
+- 接下来会走 vm._update -> vm.\__patch\__ -> patch -> createElm 以创建元素节点
 
 ##### 一个新定义的 createComponent 
 
 在 src\core\vdom\patch.ts 中 createElm 方法内先调用了一个新定义的 createComponent 方法：
 
-- 如果 vnode 是组件类型，那么调用 componentVNodeHooks 中的 init 钩子函数
+在这个 createComponent 方法中，如果 vnode 是组件类型，那么走以下流程（不再走创建普通 vnode 的流程）：
+
+- 调用 componentVNodeHooks 中的 init 钩子函数
 - 在 init 函数中：调用 createComponentInstanceForVnode 方法，创建一个 Vue 的实例（子组件），然后调用 $mount 方法挂载子组件（组件自己接管了 $mount 的过程，是不传 el 的），相当于走 $mount -> mountComponent 
-- createComponentInstanceForVnode 方法实际上通过继承于 Vue 的构造器 Sub 创建子组件（组件实例化在这个时机），所以会调用 _init 方法
-- 在 _init 方法中，走到了 initInternalComponent 方法，里面合并了一些配置
-- 在 $mount -> mountComponent 之后，走： vm._render 方法（在其中设置了父子关系）
-- 然后继续走：vm._update -> vm.\__patch\__ -> patch -> createElm
+- createComponentInstanceForVnode 方法，里面做了一些配置（包含了父子关系），并标记为组件，同时主要通过继承于 Vue 的构造器 Sub 创建子组件（组件实例化在这个时机），所以会调用 _init 方法
+- 在 _init 方法中，由于有组件标记，所以会先走到 initInternalComponent 方法，里面合并了一些配置（包含了父子关系），再继续走完 _init
+- 在 $mount -> mountComponent 之后，流转父子关系，继续走： vm._render -> vm._update -> vm.\__patch\__ -> patch -> createElm
+
 
 
 
