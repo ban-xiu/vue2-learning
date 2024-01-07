@@ -670,6 +670,8 @@ export function createPatchFunction(backend) {
     }
   }
 
+  // invokeInsertHook 方法定义
+  // invokeInsertHook 方法作用就是把传入的 insertedVnodeQueue 里保存的钩子函数依次执行一遍
   function invokeInsertHook(vnode, queue, initial) {
     // delay insert hooks for component root nodes, invoke them after the
     // element is really inserted
@@ -677,7 +679,11 @@ export function createPatchFunction(backend) {
       vnode.parent.data.pendingInsert = queue
     } else {
       for (let i = 0; i < queue.length; ++i) {
+
+        // insert 方法定义在 src\core\vdom\create-component.ts 中的 componentVNodeHooks 中
+        // insert 方法中调用了 mounted 钩子函数
         queue[i].data.hook.insert(queue[i])
+
       }
     }
   }

@@ -15,7 +15,7 @@
 - src/core/global-api/index.js 中的 initGlobalAPI 函数内有：Vue.options._base = Vue
 - src/core/instance/init.js 中的 _init 函数内通过合并配置，把 Vue 上的一些 option 扩展到了 vm.$options 上，所以就能通过 vm.$options._base 拿到 Vue 这个构造函数
 - 通过 baseCtor = context.$options._base，拿到 Vue 这个构造函数，context 是传入的 vm 组件
-- 然后执行：Ctor = baseCtor.extend(Ctor as typeof Component)，拿到一个构造函数
+- 然后执行：Ctor = baseCtor.extend(Ctor as typeof Component)，拿到一个子类构造函数
 
 ##### extend 方法
 
@@ -29,11 +29,11 @@
 #### 安装组件钩子函数
 
 - 即 installComponentHooks(data)
-- installComponentHooks 的作用就是把 componentVNodeHooks 的钩子函数合并到 data.hook 中，data 是 createComponent 方法传入的参数
+- installComponentHooks 的作用就是把 componentVNodeHooks 的钩子函数合并到 data.hook 中，以便后续使用，data 是 createComponent 方法传入的参数
 
 #### 实例化 vnode
 
-- 通过 new Vnode 实例化了组件 vnode 节点，是 vm._render 的过程 
+- 通过 new Vnode 实例化了组件 vnode，是 vm._render 的过程 
 - 与普通元素节点的 vnode 不同，组件的 vnode 是没有 children 的
 - 接下来会走 vm._update -> vm.\__patch\__ -> patch -> createElm 以创建元素节点
 

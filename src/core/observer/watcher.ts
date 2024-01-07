@@ -69,7 +69,10 @@ export default class Watcher implements DepTarget {
     expOrFn: string | (() => any),
     cb: Function,
     options?: WatcherOptions | null,
+
+    // 标记是否是一个渲染相关的 Watcher
     isRenderWatcher?: boolean
+
   ) {
     recordEffectScope(
       this,
@@ -82,7 +85,10 @@ export default class Watcher implements DepTarget {
         : undefined
     )
     if ((this.vm = vm) && isRenderWatcher) {
+
+      // 当前组件的渲染 Watcher
       vm._watcher = this
+
     }
     // options
     if (options) {

@@ -7,7 +7,7 @@
 - 初始化事件 event
 - 初始化渲染 render
 - beforeCreate 与 inject
-- 初始化数据 data method props computed watch 等
+- 初始化数据 props data methods watch computed 等
 - provide 与 create
 - 如果有 el 配置，则将 vm 实例挂载
 

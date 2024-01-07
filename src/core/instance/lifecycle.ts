@@ -123,12 +123,17 @@ export function lifecycleMixin(Vue: typeof Component) {
     }
   }
 
+  // $destroy 方法定义
   Vue.prototype.$destroy = function () {
     const vm: Component = this
     if (vm._isBeingDestroyed) {
       return
     }
+
+    // 注意 beforeDestroy 出现在 $destroy 函数执行最开始的地方
+    // 接着执行了一系列的销毁动作，包括从 parent 的 $children 中删掉自身，删除 Watcher，当前渲染的 vnode 执行销毁钩子函数等
     callHook(vm, 'beforeDestroy')
+
     vm._isBeingDestroyed = true
     // remove self from parent
     const parent = vm.$parent
@@ -145,10 +150,15 @@ export function lifecycleMixin(Vue: typeof Component) {
     }
     // call the last hook...
     vm._isDestroyed = true
+    
     // invoke destroy hooks on current rendered tree
+    // 递归销毁
     vm.__patch__(vm._vnode, null)
+
     // fire destroyed hook
+    // 注意调用了 destroyed 钩子 
     callHook(vm, 'destroyed')
+
     // turn off all instance listeners.
     vm.$off()
     // remove __vue__ reference
@@ -195,6 +205,8 @@ export function mountComponent(
       }
     }
   }
+
+  // 注意调用了 beforeMount 钩子
   callHook(vm, 'beforeMount')
 
   let updateComponent
@@ -230,8 +242,13 @@ export function mountComponent(
 
   const watcherOptions: WatcherOptions = {
     before() {
+
+      // 当已经 mounted 同时没有 destroyed 时才会执行 beforeUpdate
       if (vm._isMounted && !vm._isDestroyed) {
+
+        // 注意调用了 beforeUpdate 钩子
         callHook(vm, 'beforeUpdate')
+
       }
     }
   }
@@ -266,12 +283,15 @@ export function mountComponent(
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
 
-  // vm.$vnode == null 表示父节点为空，即该节点为根元素
+  // vm.$vnode == null 表示父节点为空，即该节点为根元素，不是组件
   if (vm.$vnode == null) {
 
     // 挂载实例
     vm._isMounted = true
+
+    // 注意调用了 mounted 钩子
     callHook(vm, 'mounted')
+
   }
   return vm
 }
@@ -424,6 +444,7 @@ export function deactivateChildComponent(vm: Component, direct?: boolean) {
   }
 }
 
+// 生命周期核心方法：callHook
 export function callHook(
   vm: Component,
   hook: string,
@@ -435,6 +456,9 @@ export function callHook(
   const prevInst = currentInstance
   const prevScope = getCurrentScope()
   setContext && setCurrentInstance(vm)
+
+  // 根据传入的字符串 hook，去拿到 vm.$options[hook] 对应的回调函数数组，然后遍历执行，执行的时候把 vm 作为函数执行的上下文
+  // 在合并配置时各个阶段的生命周期的函数已经被合并到 vm.$options 里
   const handlers = vm.$options[hook]
   const info = `${hook} hook`
   if (handlers) {
@@ -442,6 +466,7 @@ export function callHook(
       invokeWithErrorHandling(handlers[i], vm, args || null, vm, info)
     }
   }
+
   if (vm._hasHookEvent) {
     vm.$emit('hook:' + hook)
   }

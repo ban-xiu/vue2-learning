@@ -71,6 +71,8 @@ const sortCompareFn = (a: Watcher, b: Watcher): number => {
 /**
  * Flush both queues and run the watchers.
  */
+
+// flushSchedulerQueue 方法定义
 function flushSchedulerQueue() {
   currentFlushTimestamp = getNow()
   flushing = true
@@ -120,7 +122,10 @@ function flushSchedulerQueue() {
 
   // call component updated and activated hooks
   callActivatedHooks(activatedQueue)
+
+  // 获取到更新了的 Wathcer 数组 updatedQueue
   callUpdatedHooks(updatedQueue)
+
   cleanupDeps()
 
   // devtool hook
@@ -130,6 +135,9 @@ function flushSchedulerQueue() {
   }
 }
 
+// callUpdatedHooks 定义
+// callUpdatedHooks 对传入的数组做遍历
+// 只有满足当前 Watcher 为 vm._watcher 以及组件已经 mounted 这两个条件，才会执行 updated 钩子函数
 function callUpdatedHooks(queue: Watcher[]) {
   let i = queue.length
   while (i--) {
