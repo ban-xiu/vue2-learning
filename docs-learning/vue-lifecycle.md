@@ -19,10 +19,9 @@
 
 在 src\core\instance\lifecycle.ts 中：
 
-- 这两个钩子函数都是在 mountComponent 函数中调用，beforeMount 发生在 mount 之前，也就是 dom 挂载之前
-- 在执行 vm._render 渲染 vnode 之前，就已经执行了 beforeMount 钩子函数
-- 在执行完 vm._update 把 vnode 给 patch 到真实 dom 后，才会进行一个判断，如果 vm.$vnode 为空，才会执行 mounted 钩子（表明这不是一次组件的初始化过程，而是我们通过外部 new Vue 初始化过程）
-- 在 src\core\vdom\patch.ts 中：组件的 vnode 被 patch 到 dom 后（通过 createElm 方法实现），会执行 invokeInsertHook 函数，把传入的 insertedVnodeQueue 里保存的钩子函数依次执行一遍
+- 这两个钩子函数都是在 mountComponent 函数中调用，beforeMount 发生在 new Watcher -> vm._render（渲染 vnode） 之前，也就是在 mount（dom 挂载） 之前
+- 在执行完 Watcher 中的 vm._update 把 vnode 给 patch 到真实 dom 后（通过 createElm 方法实现），会进行一个判断，如果 vm.$vnode 为空（表明这不是一次组件的初始化过程，而是通过外部 new Vue 初始化过程），才会执行 mounted 钩子
+- 而组件的 vnode 被 patch 到 dom 后（通过 createElm 方法实现），会执行 invokeInsertHook 函数，把传入的 insertedVnodeQueue 里保存的钩子函数依次执行一遍
 - invokeInsertHook 函数通过调用了 componentVNodeHooks 中的钩子函数 insert 实现功能，在 insert 内部调用了 mounted 钩子
 
 ### beforeUpdate & updated
@@ -30,8 +29,8 @@
 - beforeUpdate 和 updated 的钩子函数执行时机都应该是在数据更新的时候
 - beforeUpdate 是在 mountComponent 函数中的 Watcher 内的 before 函数中执行，当已经 mounted 同时没有 destroyed 时才会执行 beforeUpdate
 - update 的执行时机是在在 src\core\observer\scheduler.ts 中的 flushSchedulerQueue 函数调用的时候
-- lushSchedulerQueue 函数中调用了 callUpdatedHooks(updatedQueue) 方法，updatedQueue 是更新了的 Wathcer 数组，在 callUpdatedHooks 函数会遍历 updatedQueue，只有满足当前 Watcher 为 vm._watcher（当前组件的 Watcher） 以及组件已经 mounted 这两个条件，才会执行 updated 钩子函数
-- 在实例化 Watcher 的过程中，在它的构造函数里会判断 isRenderWatcher（是否为一个渲染相关的 Watcher），接着把当前 watcher 的实例赋值给 vm._watcher，因此在 callUpdatedHooks 函数中，只有 vm._watcher 的回调执行完毕后，才会执行 updated 钩子函数
+- flushSchedulerQueue 函数中调用了 callUpdatedHooks(updatedQueue) 方法，updatedQueue 是更新了的 Wathcer 数组，在 callUpdatedHooks 函数会遍历 updatedQueue，只有满足 Watcher 为 vm._watcher（当前组件的 Watcher） 以及组件已经 mounted 这两个条件，才会执行 updated 钩子函数
+- 在实例化 Watcher 的过程中，在它的构造函数里会判断 isRenderWatcher（是否为一个渲染相关的 Watcher），接着把当前 watcher 的实例赋值给 vm._watcher，在 callUpdatedHooks 函数中，只有 vm._watcher 的回调执行完毕后，才会执行 updated 钩子函数
 
 ### beforeDestroy & destroyed
 

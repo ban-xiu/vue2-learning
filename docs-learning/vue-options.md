@@ -4,7 +4,7 @@
 
 在 src\core\instance\init.ts 中，当执行 new Vue 的时候，在执行 this._init(options) 的时候，就会执行 mergeOptions 方法去合并 options，合并完的结果保留在 vm.$options 中：
 
-- 实际上就是把 resolveConstructorOptions(vm.constructor) 的返回值和 options 做合并，在 new Vue 的普通场景下，它还是简单返回 vm.constructor.options
+- 实际上就是把 resolveConstructorOptions(vm.constructor) 的返回值和 options 做合并，在 new Vue 的普通场景下， resolveConstructorOptions 还是简单返回 vm.constructor.options
 - vm.constructor 相当于 Vue.options，在 initGlobalAPI(Vue) 的时候定义了这个值
 
  initGlobalAPI 的定义在 src\core\global-api\index.ts 中：

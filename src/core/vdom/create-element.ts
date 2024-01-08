@@ -128,6 +128,7 @@ export function _createElement(
       (!data || !data.pre) &&
 
       // 当传入的不是 html 字符串时
+      // 注意 resolveAsset 方法可以拿到 vm.$options.components[tag] 即当前组件的构造函数
       isDef((Ctor = resolveAsset(context.$options, 'components', tag)))
     ) {
       

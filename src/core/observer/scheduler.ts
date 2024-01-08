@@ -144,7 +144,10 @@ function callUpdatedHooks(queue: Watcher[]) {
     const watcher = queue[i]
     const vm = watcher.vm
     if (vm && vm._watcher === watcher && vm._isMounted && !vm._isDestroyed) {
+
+      // 注意 updated 钩子的调用
       callHook(vm, 'updated')
+
     }
   }
 }

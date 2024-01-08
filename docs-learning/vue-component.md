@@ -49,7 +49,24 @@
 - 在 _init 方法中，由于有组件标记，所以会先走到 initInternalComponent 方法，里面合并了一些配置（包含了父子关系），再继续走完 _init
 - 在 $mount -> mountComponent 之后，流转父子关系，继续走： vm._render -> vm._update -> vm.\__patch\__ -> patch -> createElm
 
+### 组件注册
 
+#### 全局注册
+
+通过 Vue.component(id, definition) 实现，它的定义过程发生在最开始初始化 Vue 的全局函数的时候（通过 src\core\global-api\assets.ts 中的 initAssetRegisters 方法实现）
+
+在 initAssetRegisters 方法内：
+
+- 通过遍历 ASSET_TYPES = ['component','directive','filter'] 的 3 个 type，初始化了 3 个全局函数，挂载到 Vue.options 上
+- 如果 type 是 component 且传入的 definition 是一个对象：通过 extend 方法把这个对象转换成一个继承于 Vue 的构造函数
+- extend 方法内执行了 mergeOptions 方法，把 Vue.options 合并到 Sub.options 上，然后在组件的实例化时，Sub.options.components 会合并到 vm.$options.components 上
+- 然后在创建 vnode 的过程中，会执行 _createElement 方法，通过 resolveAsset 方法拿到当前组件的构造函数 Ctor，进而执行 createComponent 方法，把Ctor 作为参数传入
+
+#### 局部注册
+
+通过 components: {} 实现
+
+在组件的 Vue 的实例化阶段有一个合并 option 的逻辑，同上，把 components 合并到 vm.$options.components 上，这样就可以在 resolveAsset 的时候拿到当前组件的构造函数 Ctor，进而执行 createComponent 方法，把Ctor 作为参数传入
 
 
 
