@@ -28,8 +28,8 @@
 
 - beforeUpdate 和 updated 的钩子函数执行时机都应该是在数据更新的时候
 - beforeUpdate 是在 mountComponent 函数中的 Watcher 内的 before 函数中执行，当已经 mounted 同时没有 destroyed 时才会执行 beforeUpdate
-- update 的执行时机是在在 src\core\observer\scheduler.ts 中的 flushSchedulerQueue 函数调用的时候
-- flushSchedulerQueue 函数中调用了 callUpdatedHooks(updatedQueue) 方法，updatedQueue 是更新了的 Wathcer 数组，在 callUpdatedHooks 函数会遍历 updatedQueue，只有满足 Watcher 为 vm._watcher（当前组件的 Watcher） 以及组件已经 mounted 这两个条件，才会执行 updated 钩子函数
+- update 的执行时机是在在 src\core\observer\scheduler.ts 中的 flushSchedulerQueue 函数调用（派发更新）的时候
+- flushSchedulerQueue 函数中调用了 callUpdatedHooks(updatedQueue) 方法，updatedQueue 是更新了的 Wathcer 数组，在 callUpdatedHooks 函数中会遍历 updatedQueue，只有满足 Watcher 为 vm._watcher（当前组件的 Watcher） 以及组件已经 mounted 这两个条件，才会执行 updated 钩子函数
 - 在实例化 Watcher 的过程中，在它的构造函数里会判断 isRenderWatcher（是否为一个渲染相关的 Watcher），接着把当前 watcher 的实例赋值给 vm._watcher，在 callUpdatedHooks 函数中，只有 vm._watcher 的回调执行完毕后，才会执行 updated 钩子函数
 
 ### beforeDestroy & destroyed

@@ -78,7 +78,7 @@ export function initMixin(Vue: typeof Component) {
 
     initInjections(vm) // resolve injections before data/props
 
-    // 初始化 data computed watcher 等
+    // 初始化 props methods data computed watcher 等
     initState(vm)
 
     initProvide(vm) // resolve provide after data/props

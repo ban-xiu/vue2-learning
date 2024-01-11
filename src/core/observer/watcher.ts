@@ -38,6 +38,8 @@ export interface WatcherOptions extends DebuggerOptions {
  * This is used for both the $watch() api and directives.
  * @internal
  */
+
+// 注意 Watcher 是 DepTarget 接口的实现类
 export default class Watcher implements DepTarget {
   vm?: Component | null
   expression: string
@@ -109,14 +111,20 @@ export default class Watcher implements DepTarget {
     this.active = true
     this.post = false
     this.dirty = this.lazy // for lazy watchers
+
+    // 与 Dep 相关内容
     this.deps = []
     this.newDeps = []
     this.depIds = new Set()
     this.newDepIds = new Set()
+
     this.expression = __DEV__ ? expOrFn.toString() : ''
     // parse expression for getter
     if (isFunction(expOrFn)) {
+
+      // getter 是传入的回调函数
       this.getter = expOrFn
+
     } else {
       this.getter = parsePath(expOrFn)
       if (!this.getter) {
@@ -130,6 +138,8 @@ export default class Watcher implements DepTarget {
           )
       }
     }
+
+    // 在构造函数中调用了 this.get() 方法
     this.value = this.lazy ? undefined : this.get()
   }
 
@@ -137,11 +147,19 @@ export default class Watcher implements DepTarget {
    * Evaluate the getter, and re-collect dependencies.
    */
   get() {
+
+    // pushTarget 方法实际上就是把 Dep.target 赋值为当前的渲染 watcher 并压栈
     pushTarget(this)
+
     let value
     const vm = this.vm
     try {
+
+      // this.getter 对应就是 updateComponent 函数
+      // 实际上执行了 vm._update(vm._render(), hydrating)
+      // 会先执行 vm._render() 方法，会生成渲染 vnode，并且会对 vm 上的数据访问，触发数据对象的 getter
       value = this.getter.call(vm, vm)
+
     } catch (e: any) {
       if (this.user) {
         handleError(e, vm, `getter for watcher "${this.expression}"`)
@@ -163,6 +181,9 @@ export default class Watcher implements DepTarget {
   /**
    * Add a dependency to this directive.
    */
+
+  // 每个对象值的 getter 都持有一个 dep，在触发 getter 的时候会调用 dep.depend() 方法
+  // 也就会执行 Dep.target.addDep(this)
   addDep(dep: Dep) {
     const id = dep.id
     if (!this.newDepIds.has(id)) {
@@ -199,6 +220,8 @@ export default class Watcher implements DepTarget {
    * Subscriber interface.
    * Will be called when a dependency changes.
    */
+
+  // 注意 update
   update() {
     /* istanbul ignore else */
     if (this.lazy) {
@@ -206,6 +229,8 @@ export default class Watcher implements DepTarget {
     } else if (this.sync) {
       this.run()
     } else {
+
+      // 注意，最后会走 queueWatcher 方法
       queueWatcher(this)
     }
   }
@@ -214,6 +239,11 @@ export default class Watcher implements DepTarget {
    * Scheduler job interface.
    * Will be called by the scheduler.
    */
+
+  // 注意 run
+  // 实际上就是传入 Watcher 的回调函数
+  // 首先通过 this.get() 得到它当前的值，然后做判断，如果满足新旧值不等、新值是对象类型、deep 模式任何一个条件，则执行 Watcher 的回调
+  // 注意回调函数执行的时候会把第一个和第二个参数传入新值 value 和旧值 oldValue，使得自定义 Watcher 的时候能在回调函数的参数中拿到新旧值
   run() {
     if (this.active) {
       const value = this.get()

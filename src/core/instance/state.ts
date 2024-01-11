@@ -39,36 +39,55 @@ const sharedPropertyDefinition = {
   set: noop
 }
 
+// 注意 proxy
 export function proxy(target: Object, sourceKey: string, key: string) {
+
   sharedPropertyDefinition.get = function proxyGetter() {
     return this[sourceKey][key]
   }
   sharedPropertyDefinition.set = function proxySetter(val) {
     this[sourceKey][key] = val
   }
+
+  // 把 vm._xxx.xxx 的读写转化成 vm.xxx，就可以使用 this.xxx 访问
   Object.defineProperty(target, key, sharedPropertyDefinition)
+
 }
 
+// 注意 initState
 export function initState(vm: Component) {
   const opts = vm.$options
+
+  // 初始化 props
   if (opts.props) initProps(vm, opts.props)
 
   // Composition API
   initSetup(vm)
 
+  // 初始化 methods
   if (opts.methods) initMethods(vm, opts.methods)
   if (opts.data) {
+
+    // 初始化 data
     initData(vm)
+
   } else {
     const ob = observe((vm._data = {}))
     ob && ob.vmCount++
   }
+
+  // 初始化 computed
   if (opts.computed) initComputed(vm, opts.computed)
+
   if (opts.watch && opts.watch !== nativeWatch) {
+
+    // 初始化 watch
     initWatch(vm, opts.watch)
+
   }
 }
 
+// 注意 initProps
 function initProps(vm: Component, propsOptions: Object) {
   const propsData = vm.$options.propsData || {}
   const props = (vm._props = shallowReactive({}))
@@ -95,6 +114,10 @@ function initProps(vm: Component, propsOptions: Object) {
           vm
         )
       }
+
+      // 调用 defineReactive 方法把每个 prop 对应的值变成响应式，即可以通过 vm._props.xxx 访问到对应属性
+
+      // 1
       defineReactive(
         props,
         key,
@@ -112,19 +135,26 @@ function initProps(vm: Component, propsOptions: Object) {
         },
         true /* shallow */
       )
+
+      // 2
     } else {
       defineReactive(props, key, value, undefined, true /* shallow */)
     }
+
     // static props are already proxied on the component's prototype
     // during Vue.extend(). We only need to proxy props defined at
     // instantiation here.
+
+    // 通过 proxy 把 vm._props.xxx 的访问代理到 vm.xxx 上
     if (!(key in vm)) {
       proxy(vm, `_props`, key)
     }
+
   }
   toggleObserving(true)
 }
 
+// 注意 initData
 function initData(vm: Component) {
   let data: any = vm.$options.data
   data = vm._data = isFunction(data) ? getData(data, vm) : data || {}
@@ -157,10 +187,15 @@ function initData(vm: Component) {
           vm
         )
     } else if (!isReserved(key)) {
+
+      // 通过 proxy 把每一个 vm._data.xxx 都代理到 vm.xxx 上
       proxy(vm, `_data`, key)
+
     }
   }
+
   // observe data
+  // 把 data 变成响应式，即可以通过 vm._data.xxx 访问到定义的 data 返回函数中对应的属性
   const ob = observe(data)
   ob && ob.vmCount++
 }

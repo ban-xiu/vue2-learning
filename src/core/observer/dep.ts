@@ -28,10 +28,19 @@ export interface DepTarget extends DebuggerOptions {
  * directives subscribing to it.
  * @internal
  */
+
+// 注意 Dep
 export default class Dep {
+
+  // 注意 Watcher 是 DepTarget 接口的实现类
+  // 静态属性 target，这是一个全局唯一的 Watcher
   static target?: DepTarget | null
+
   id: number
+
+  // subs 是 Watcher 的数组
   subs: Array<DepTarget | null>
+
   // pending subs cleanup
   _pending = false
 
@@ -40,6 +49,7 @@ export default class Dep {
     this.subs = []
   }
 
+  // 注意 addSub 方法用来收集 Watcher
   addSub(sub: DepTarget) {
     this.subs.push(sub)
   }
@@ -56,9 +66,15 @@ export default class Dep {
     }
   }
 
+  // 通过 dep.depend 做依赖收集
   depend(info?: DebuggerEventExtraInfo) {
+
+    // 此时 Dep.target 为当前渲染 Watcher
     if (Dep.target) {
+
+      // 调用了 addSub 方法收集 Watcher 
       Dep.target.addDep(this)
+
       if (__DEV__ && info && Dep.target.onTrack) {
         Dep.target.onTrack({
           effect: Dep.target,

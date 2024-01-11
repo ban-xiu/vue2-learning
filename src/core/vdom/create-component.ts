@@ -55,9 +55,12 @@ const componentVNodeHooks = {
     }
   },
 
+  // 拿到新的 vnode 的组件配置以及组件实例，去执行 updateChildComponent 方法
   prepatch(oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
     const options = vnode.componentOptions
     const child = (vnode.componentInstance = oldVnode.componentInstance)
+
+    // 更新了 vnode 对应的实例 vm 的一系列属性，包括占位符 vm.$vnode 的更新、slot 的更新，listeners 的更新，props 的更新等
     updateChildComponent(
       child,
       options.propsData, // updated props

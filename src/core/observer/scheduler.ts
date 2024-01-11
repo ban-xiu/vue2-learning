@@ -19,6 +19,8 @@ let index = 0
 /**
  * Reset the scheduler's state.
  */
+
+// 控制流程状态的一些变量恢复到初始值，把 Watcher 队列清空
 function resetSchedulerState() {
   index = queue.length = activatedChildren.length = 0
   has = {}
@@ -72,7 +74,7 @@ const sortCompareFn = (a: Watcher, b: Watcher): number => {
  * Flush both queues and run the watchers.
  */
 
-// flushSchedulerQueue 方法定义
+// 注意 flushSchedulerQueue 
 function flushSchedulerQueue() {
   currentFlushTimestamp = getNow()
   flushing = true
@@ -86,10 +88,14 @@ function flushSchedulerQueue() {
   //    user watchers are created before the render watcher)
   // 3. If a component is destroyed during a parent component's watcher run,
   //    its watchers can be skipped.
+
+  // 队列排序，做了从小到大的排序
   queue.sort(sortCompareFn)
 
   // do not cache length because more watchers might be pushed
   // as we run existing watchers
+
+  // 遍历队列，执行每一个 Watcher 的 run 方法
   for (index = 0; index < queue.length; index++) {
     watcher = queue[index]
     if (watcher.before) {
@@ -97,7 +103,10 @@ function flushSchedulerQueue() {
     }
     id = watcher.id
     has[id] = null
+
+    // 注意
     watcher.run()
+
     // in dev build, check and stop circular updates.
     if (__DEV__ && has[id] != null) {
       circular[id] = (circular[id] || 0) + 1
@@ -118,6 +127,8 @@ function flushSchedulerQueue() {
   const activatedQueue = activatedChildren.slice()
   const updatedQueue = queue.slice()
 
+  // 状态恢复
+  // 控制流程状态的一些变量恢复到初始值，把 Watcher 队列清空
   resetSchedulerState()
 
   // call component updated and activated hooks
@@ -175,6 +186,8 @@ function callActivatedHooks(queue) {
  * Jobs with duplicate IDs will be skipped unless it's
  * pushed when the queue is being flushed.
  */
+
+// 注意 queueWatcher
 export function queueWatcher(watcher: Watcher) {
   const id = watcher.id
   if (has[id] != null) {
@@ -197,7 +210,9 @@ export function queueWatcher(watcher: Watcher) {
     }
     queue.splice(i + 1, 0, watcher)
   }
+
   // queue the flush
+  // 用 waiting 保证 nextTick(flushSchedulerQueue) 的调用逻辑只有一次
   if (!waiting) {
     waiting = true
 

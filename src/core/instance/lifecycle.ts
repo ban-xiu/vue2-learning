@@ -296,9 +296,13 @@ export function mountComponent(
   return vm
 }
 
+// 注意 updateChildComponent
 export function updateChildComponent(
   vm: Component,
+
+  // 父组件的 props
   propsData: Record<string, any> | null | undefined,
+
   listeners: Record<string, Function | Array<Function>> | undefined,
   parentVnode: MountedComponentVNode,
   renderChildren?: Array<VNode> | null
@@ -377,6 +381,7 @@ export function updateChildComponent(
   vm.$listeners = vm.$options._parentListeners = listeners
   updateComponentListeners(vm, listeners, prevListeners)
 
+  // 更新 props
   // update props
   if (propsData && vm.$options.props) {
     toggleObserving(false)

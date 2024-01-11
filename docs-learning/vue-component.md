@@ -12,8 +12,8 @@
 
 #### 构造子类构造函数
 
-- src/core/global-api/index.js 中的 initGlobalAPI 函数内有：Vue.options._base = Vue
-- src/core/instance/init.js 中的 _init 函数内通过合并配置，把 Vue 上的一些 option 扩展到了 vm.$options 上，所以就能通过 vm.$options._base 拿到 Vue 这个构造函数
+- src\core\global-api\index.ts 中的 initGlobalAPI 函数内有：Vue.options._base = Vue
+- src\core\instance\init.ts 中的 _init 函数内通过合并配置，把 Vue 上的一些 option 扩展到了 vm.$options 上，所以就能通过 vm.$options._base 拿到 Vue 这个构造函数
 - 通过 baseCtor = context.$options._base，拿到 Vue 这个构造函数，context 是传入的 vm 组件
 - 然后执行：Ctor = baseCtor.extend(Ctor as typeof Component)，拿到一个子类构造函数
 
@@ -53,7 +53,8 @@
 
 #### 全局注册
 
-通过 Vue.component(id, definition) 实现，它的定义过程发生在最开始初始化 Vue 的全局函数的时候（通过 src\core\global-api\assets.ts 中的 initAssetRegisters 方法实现）
+- 通过 Vue.component(id, definition) 实现，它的定义过程发生在最开始初始化 Vue 的全局函数（initGlobalAPI）的时候
+- initGlobalAPI 方法内部调用了 src\core\global-api\assets.ts 中的 initAssetRegisters 方法
 
 在 initAssetRegisters 方法内：
 
@@ -66,7 +67,7 @@
 
 通过 components: {} 实现
 
-在组件的 Vue 的实例化阶段有一个合并 option 的逻辑，同上，把 components 合并到 vm.$options.components 上，这样就可以在 resolveAsset 的时候拿到当前组件的构造函数 Ctor，进而执行 createComponent 方法，把Ctor 作为参数传入
+在组件的 Vue 的实例化阶段有一个合并 option 的逻辑，同上，把 components 合并到 vm.$options.components 上，这样就可以在 resolveAsset 的时候拿到当前组件的构造函数 Ctor，进而执行 createComponent 方法，把 Ctor 作为参数传入
 
 
 

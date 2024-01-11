@@ -40,7 +40,10 @@ export function initGlobalAPI(Vue: GlobalAPI) {
     defineReactive
   }
 
+  // 注意 set
+  // 用于给对象添加一个新的属性时触发它的 setter
   Vue.set = set
+
   Vue.delete = del
   Vue.nextTick = nextTick
 

@@ -320,6 +320,9 @@ export function validateComponentName(name: string) {
  * Ensure all props option syntax are normalized into the
  * Object-based format.
  */
+
+// 注意 normalizeProps
+// 其实上就是将传入的 props 属性转化为规范的 json 形式
 function normalizeProps(options: Record<string, any>, vm?: Component | null) {
   const props = options.props
   if (!props) return
@@ -422,6 +425,7 @@ export function mergeOptions(
     child = child.options
   }
 
+  // 规范化
   normalizeProps(child, vm)
   normalizeInject(child, vm)
   normalizeDirectives(child)

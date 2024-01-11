@@ -7,7 +7,7 @@
 - 初始化事件 event
 - 初始化渲染 render
 - beforeCreate 与 inject
-- 初始化数据 props data methods watch computed 等
+- 初始化数据 props -> methods -> data -> watch -> computed 等
 - provide 与 create
 - 如果有 el 配置，则将 vm 实例挂载
 
@@ -41,7 +41,7 @@ src\platforms\web\runtime\index.ts 中，定义了 Vue 的原型方法 $mount，
 
 ### update 方法的实现
 
-src/core/instance/lifecycle.ts 中，定义了 Vue 的原型方法 _update，它实现了 update 方法的逻辑：
+src\core\instance\lifecycle.ts 中，定义了 Vue 的原型方法 _update，它实现了 update 方法的逻辑：
 
 - 它被调用的时机有 2 个，一个是首次渲染，一个是数据更新的时候
 - _update 实际上调用了 vm.\__patch\__ 方法，实现 dom 的更新
